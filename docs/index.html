@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&amp;family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: #FBF7EE; }
+    ::selection { background: rgba(184,146,74,.22); }
+    input::placeholder, textarea::placeholder { color: #B6AC99; font-style: italic; }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    select { -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23B8924A' stroke-width='1.5' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 16px center; }
+  </style>
+</helmet>
+<div style="min-height:100vh; background:#FBF7EE; color:#2C2823; font-family:'EB Garamond', Georgia, serif; font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;">
+
+  <!-- ===================== GUEST: HERO + MENU + FORM ===================== -->
+  <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+  <div>
+
+    <!-- HERO -->
+    <section style="max-width:760px; margin:0 auto; padding:clamp(40px,9vw,64px) 22px 26px; text-align:center;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:30px;">
+        <span style="height:1px; width:46px; background:rgba(184,146,74,.5);"></span>
+        <span style="display:inline-block; width:7px; height:7px; background:#B8924A; transform:rotate(45deg);"></span>
+        <span style="height:1px; width:46px; background:rgba(184,146,74,.5);"></span>
+      </div>
+      <p style="font-size:13px; letter-spacing:.42em; text-transform:uppercase; color:#B8924A; margin:0 0 18px; font-weight:600;">YOU’RE INVITED TO</p>
+      <h1 style="font-family:'Cormorant Garamond', serif; font-weight:600; font-size:clamp(40px,11vw,82px); line-height:1.04; margin:0; color:#2C2823;">D&amp;T</h1>
+      <p style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:clamp(19px,5vw,26px); color:#6E6657; margin:24px auto 0; max-width:32ch;">I’ve finished my Master’s, and I’d love for you to celebrate with me over dinner. Thank you for taking the time, it would mean the world.</p>
+      <p style="font-family:'Cormorant Garamond', serif; font-size:clamp(18px,4.6vw,22px); color:#B8924A; margin:14px 0 0;">— Tomi</p>
+
+      <div style="margin:42px auto 0; max-width:420px; border-top:1px solid rgba(184,146,74,.32); border-bottom:1px solid rgba(184,146,74,.32); padding:26px 10px; display:flex; flex-direction:column; gap:18px;">
+        <div>
+          <p style="margin:0; font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:#B8924A; font-weight:600;">When</p>
+          <p style="margin:5px 0 0; font-family:'Cormorant Garamond',serif; font-size:24px; color:#2C2823;">Tuesday, 30 June 2026 · 7:00 PM</p>
+        </div>
+        <div style="height:1px; background:rgba(184,146,74,.22); margin:0 auto; width:60%;"></div>
+        <div>
+          <p style="margin:0; font-size:12px; letter-spacing:.32em; text-transform:uppercase; color:#B8924A; font-weight:600;">Where</p>
+          <p style="margin:5px 0 0; font-family:'Cormorant Garamond',serif; font-size:24px; color:#2C2823;">Monika Restaurant</p>
+          <p style="margin:2px 0 0; color:#6E6657; font-style:italic;">14 Deptford Broadway, London SE8 4PA</p>
+        </div>
+      </div>
+
+      <p style="margin:24px auto 0; font-size:14px; color:#6E6657; letter-spacing:.04em;"><span style="color:#B8924A;">✦</span>&nbsp; Dress code: smart / cocktail attire &nbsp;<span style="color:#B8924A;">✦</span></p>
+    </section>
+
+    <!-- MENU (PDF) -->
+    <section style="max-width:680px; margin:0 auto; padding:46px 24px 10px;">
+      <div style="text-align:center; margin-bottom:24px;">
+        <p style="font-size:12px; letter-spacing:.4em; text-transform:uppercase; color:#B8924A; margin:0 0 10px; font-weight:600;">Have a look</p>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:clamp(34px,9vw,52px); margin:0; color:#2C2823;">The Menu</h2>
+        <p style="font-family:'Cormorant Garamond',serif; font-style:italic; color:#6E6657; font-size:19px; margin:10px auto 0; max-width:38ch;">Here’s the menu at Monika — have a read and choose your dishes, then pop your pre-order into the RSVP below so the kitchen can have it ready.</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <img src="menu-1.png" alt="Monika dinner menu, page 1" style="display:block; width:100%; height:auto; border:1px solid rgba(184,146,74,.3); border-radius:3px; box-shadow:0 18px 50px -30px rgba(120,90,30,.5);">
+        <img src="menu-2.png" alt="Monika dinner menu, page 2" style="display:block; width:100%; height:auto; border:1px solid rgba(184,146,74,.3); border-radius:3px; box-shadow:0 18px 50px -30px rgba(120,90,30,.5);">
+      </div>
+      <div style="text-align:center; margin-top:18px;">
+        <a href="menu.pdf" target="_blank" rel="noopener" style="display:inline-block; font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.04em; color:#2C2823; text-decoration:none; border:1px solid #B8924A; border-radius:2px; padding:11px 26px; transition:all .2s;" style-hover="background:#B8924A; color:#FFFFFF;">Download the menu (PDF) ↗</a>
+      </div>
+    </section>
+
+    <!-- RSVP FORM -->
+    <section id="rsvp" style="max-width:600px; margin:0 auto; padding:54px 24px 80px;">
+      <div style="text-align:center; margin-bottom:8px;">
+        <p style="font-size:12px; letter-spacing:.4em; text-transform:uppercase; color:#B8924A; margin:0 0 10px; font-weight:600;">Kindly reply</p>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:clamp(34px,9vw,52px); margin:0; color:#2C2823;">R.S.V.P.</h2>
+        <p style="font-family:'Cormorant Garamond',serif; font-style:italic; color:#6E6657; font-size:18px; margin:10px 0 0;">Please respond by <span style="color:#B8924A; font-style:normal;">25 June 2026</span></p>
+      </div>
+
+      <div style="margin-top:34px; background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:clamp(24px,6vw,34px) clamp(18px,5vw,26px); box-shadow:0 18px 50px -30px rgba(120,90,30,.5);">
+
+        <!-- Name -->
+        <label style="display:block; margin-bottom:24px;">
+          <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Full name</span>
+          <input type="text" value="{{ form.name }}" onChange="{{ onName }}" placeholder="Your name" style="width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none;" style-focus="border-color:#B8924A; background:#FFFFFF;">
+          <sc-if value="{{ err.name }}" hint-placeholder-val=""><span style="display:block; color:#B0563C; font-style:italic; font-size:14px; margin-top:6px;">{{ err.name }}</span></sc-if>
+        </label>
+
+        <!-- Attending -->
+        <div style="margin-bottom:24px;">
+          <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Can you join me?</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div onClick="{{ chooseYes }}" style="{{ yesStyle }}">Joyfully accepts</div>
+            <div onClick="{{ chooseNo }}" style="{{ noStyle }}">Regretfully declines</div>
+          </div>
+          <sc-if value="{{ err.attending }}" hint-placeholder-val=""><span style="display:block; color:#B0563C; font-style:italic; font-size:14px; margin-top:6px;">{{ err.attending }}</span></sc-if>
+        </div>
+
+        <!-- Attending-only fields -->
+        <sc-if value="{{ attendingYes }}" hint-placeholder-val="">
+        <div>
+          <label style="display:block; margin-bottom:24px;">
+            <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Number in your party (including you)</span>
+            <select value="{{ form.party }}" onChange="{{ onParty }}" style="width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none;" style-focus="border-color:#B8924A;">
+              <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+            </select>
+          </label>
+
+          <label style="display:block; margin-bottom:24px;">
+            <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Your dinner pre-order</span>
+            <span style="display:block; font-style:italic; color:#A99C84; font-size:14px; margin:-4px 0 9px;">This goes straight to the kitchen — please write exactly what you’d like from the menu (a starter, main and dessert). If there are a few of you, pop down everyone’s order.</span>
+            <textarea onChange="{{ onFood }}" value="{{ form.food }}" rows="5" placeholder="e.g.
+Starter — Vegetable Spring Rolls
+Main — Seafood Spaghetti
+Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none; resize:vertical;" style-focus="border-color:#B8924A; background:#FFFFFF;"></textarea>
+            <sc-if value="{{ err.food }}" hint-placeholder-val=""><span style="display:block; color:#B0563C; font-style:italic; font-size:14px; margin-top:6px;">{{ err.food }}</span></sc-if>
+          </label>
+
+          <label style="display:block; margin-bottom:24px;">
+            <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Your order name <span style="text-transform:none; letter-spacing:0; font-style:italic; color:#B6AC99;">(just for fun)</span></span>
+            <span style="display:block; font-style:italic; color:#A99C84; font-size:14px; margin:-4px 0 9px;">Like the name on a coffee cup — give your order a name we’ll call out on the night. Your nickname, an inside joke, anything you like!</span>
+            <input type="text" value="{{ form.orderName }}" onChange="{{ onOrderName }}" placeholder="e.g. The Graduate’s Plus-One, Suya Queen, Table 1 Legend…" style="width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none;" style-focus="border-color:#B8924A; background:#FFFFFF;">
+          </label>
+        </div>
+        </sc-if>
+
+        <!-- Dietary -->
+        <label style="display:block; margin-bottom:24px;">
+          <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">Dietary requirements or allergies</span>
+          <textarea onChange="{{ onDietary }}" value="{{ form.dietary }}" rows="2" placeholder="e.g. nut allergy, vegetarian, none" style="display:block; width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none; resize:vertical;" style-focus="border-color:#B8924A; background:#FFFFFF;"></textarea>
+        </label>
+
+        <!-- Message -->
+        <label style="display:block; margin-bottom:28px;">
+          <span style="display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600; margin-bottom:9px;">A note for me <span style="text-transform:none; letter-spacing:0; font-style:italic; color:#B6AC99;">(optional)</span></span>
+          <textarea onChange="{{ onMessage }}" value="{{ form.message }}" rows="3" placeholder="Say hi or leave a little note…" style="display:block; width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none; resize:vertical;" style-focus="border-color:#B8924A; background:#FFFFFF;"></textarea>
+        </label>
+
+        <button onClick="{{ submit }}" style="width:100%; font-family:'Cormorant Garamond',serif; font-size:21px; letter-spacing:.06em; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:15px; cursor:pointer; transition:background .2s;" style-hover="background:#9F7C39;">{{ submitLabel }}</button>
+      </div>
+    </section>
+
+  </div>
+  </sc-if>
+
+  <!-- ===================== GUEST: CONFIRMATION ===================== -->
+  <sc-if value="{{ showConfirm }}" hint-placeholder-val="">
+  <section style="max-width:560px; margin:0 auto; padding:90px 28px; text-align:center; animation:riseIn .6s ease both;">
+    <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:26px;">
+      <span style="height:1px; width:46px; background:rgba(184,146,74,.5);"></span>
+      <span style="display:inline-block; width:7px; height:7px; background:#B8924A; transform:rotate(45deg);"></span>
+      <span style="height:1px; width:46px; background:rgba(184,146,74,.5);"></span>
+    </div>
+    <p style="font-size:13px; letter-spacing:.4em; text-transform:uppercase; color:#B8924A; margin:0 0 16px; font-weight:600;">{{ confirmKicker }}</p>
+    <h1 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:clamp(38px,10vw,64px); line-height:1.05; margin:0; color:#2C2823;">{{ confirmTitle }}</h1>
+    <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:21px; color:#6E6657; margin:22px auto 0; max-width:34ch;">{{ confirmMessage }}</p>
+
+    <div style="margin:40px auto 0; max-width:420px; background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:26px 24px; text-align:left;">
+      <p style="text-align:center; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#B8924A; font-weight:600; margin:0 0 18px;">Your response</p>
+      <sc-for list="{{ summaryRows }}" as="row" hint-placeholder-count="3">
+        <div style="display:flex; justify-content:space-between; gap:16px; padding:8px 0; border-bottom:1px solid rgba(184,146,74,.16);">
+          <span style="color:#9A8C70; font-size:14px; letter-spacing:.04em; white-space:nowrap;">{{ row.label }}</span>
+          <span style="color:#2C2823; text-align:right; font-family:'Cormorant Garamond',serif; font-size:18px;">{{ row.value }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <button onClick="{{ editMine }}" style="margin-top:30px; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.04em; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:12px 30px; cursor:pointer; transition:all .2s;" style-hover="background:#B8924A; color:#FFFFFF;">Edit my response</button>
+  </section>
+  </sc-if>
+
+  <!-- ===================== HOST GATE ===================== -->
+  <sc-if value="{{ showHostGate }}" hint-placeholder-val="">
+  <section style="max-width:380px; margin:0 auto; padding:110px 28px; text-align:center;">
+    <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:38px; margin:0 0 8px; color:#2C2823;">Host Access</h2>
+    <p style="color:#6E6657; font-style:italic; margin:0 0 26px;">Enter the passcode to view responses.</p>
+    <input type="password" value="{{ passInput }}" onChange="{{ onPass }}" onKeyDown="{{ onPassKey }}" placeholder="Passcode" style="width:100%; text-align:center; letter-spacing:.3em; font-family:'EB Garamond',serif; font-size:18px; background:#FFFFFF; border:1px solid #E4DAC4; border-radius:2px; padding:14px; outline:none;" style-focus="border-color:#B8924A;">
+    <sc-if value="{{ passError }}" hint-placeholder-val=""><p style="color:#B0563C; font-style:italic; font-size:14px; margin:10px 0 0;">{{ passError }}</p></sc-if>
+    <button onClick="{{ submitPass }}" style="margin-top:18px; width:100%; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.05em; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:13px; cursor:pointer;">Unlock</button>
+    <button onClick="{{ exitHost }}" style="margin-top:14px; background:transparent; border:none; color:#9A8C70; font-family:'EB Garamond',serif; font-size:15px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">Back to invitation</button>
+  </section>
+  </sc-if>
+
+  <!-- ===================== HOST DASHBOARD ===================== -->
+  <sc-if value="{{ showHostDash }}" hint-placeholder-val="">
+  <section style="max-width:1040px; margin:0 auto; padding:48px 22px 80px;">
+    <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:baseline; justify-content:space-between; margin-bottom:8px;">
+      <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:40px; margin:0; color:#2C2823;">Responses</h2>
+      <button onClick="{{ exitHost }}" style="background:transparent; border:none; color:#9A8C70; font-family:'EB Garamond',serif; font-size:15px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">Back to invitation</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:22px 0 26px;">
+      <div style="background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:20px;">
+        <p style="margin:0; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Replies</p>
+        <p style="margin:6px 0 0; font-family:'Cormorant Garamond',serif; font-size:40px; color:#2C2823;">{{ stats.replies }}</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:20px;">
+        <p style="margin:0; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Attending</p>
+        <p style="margin:6px 0 0; font-family:'Cormorant Garamond',serif; font-size:40px; color:#B8924A;">{{ stats.yes }}</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:20px;">
+        <p style="margin:0; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Total guests</p>
+        <p style="margin:6px 0 0; font-family:'Cormorant Garamond',serif; font-size:40px; color:#2C2823;">{{ stats.attendees }}</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:20px;">
+        <p style="margin:0; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Declined</p>
+        <p style="margin:6px 0 0; font-family:'Cormorant Garamond',serif; font-size:40px; color:#9A8C70;">{{ stats.no }}</p>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px;">
+      <button onClick="{{ downloadCSV }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:11px 22px; cursor:pointer;">Download CSV</button>
+      <button onClick="{{ copyAll }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:11px 22px; cursor:pointer;">{{ copyLabel }}</button>
+    </div>
+
+    <sc-if value="{{ hasResponses }}" hint-placeholder-val="">
+    <div style="overflow-x:auto; border:1px solid rgba(184,146,74,.3); border-radius:3px; background:#FFFFFF;">
+      <table style="border-collapse:collapse; width:100%; min-width:760px; font-size:14px;">
+        <thead>
+          <tr style="background:#F6EFDF;">
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600; white-space:nowrap;">Name</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Order name</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Going</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Party</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Pre-order</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Dietary</th>
+            <th style="text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3">
+            <tr style="border-top:1px solid rgba(184,146,74,.16);">
+              <td style="padding:11px 14px; color:#2C2823; white-space:nowrap;">{{ r.name }}</td>
+              <td style="padding:11px 14px; color:#B8924A; font-family:'Cormorant Garamond',serif; font-size:17px;">{{ r.orderName }}</td>
+              <td style="padding:11px 14px;"><span style="{{ r.badgeStyle }}">{{ r.going }}</span></td>
+              <td style="padding:11px 14px; color:#2C2823;">{{ r.party }}</td>
+              <td style="padding:11px 14px; color:#544D40; min-width:200px; white-space:pre-wrap;">{{ r.food }}</td>
+              <td style="padding:11px 14px; color:#544D40; max-width:160px;">{{ r.dietary }}</td>
+              <td style="padding:11px 14px; color:#544D40; max-width:200px;">{{ r.message }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    </sc-if>
+    <sc-if value="{{ noResponses }}" hint-placeholder-val="">
+      <p style="text-align:center; color:#9A8C70; font-style:italic; padding:40px 0;">No responses have come in yet.</p>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <!-- FOOTER -->
+  <footer style="text-align:center; padding:30px 20px 40px; border-top:1px solid rgba(184,146,74,.18);">
+    <p style="margin:0 0 10px; font-family:'Cormorant Garamond',serif; font-style:italic; color:#A99C84; font-size:16px;">With love &amp; gratitude — Tomi</p>
+    <button onClick="{{ openHost }}" style="background:transparent; border:none; color:#C7BCA4; font-family:'EB Garamond',serif; font-size:12px; letter-spacing:.1em; cursor:pointer;">Host access</button>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  STORE = 'tomi_grad_rsvp_v2';
+  MINE = 'tomi_grad_rsvp_mine_v2';
+  PASS = '062026';
+
+  state = {
+    view: 'guest',
+    screen: 'form',
+    hostAuthed: false,
+    passInput: '',
+    passError: '',
+    copied: false,
+    form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' },
+    err: {},
+    responses: [],
+    myId: null,
+  };
+
+  componentDidMount() {
+    let responses = [];
+    try { responses = JSON.parse(localStorage.getItem(this.STORE) || '[]'); } catch (e) { responses = []; }
+    const myId = localStorage.getItem(this.MINE) || null;
+    this.setState({ responses, myId });
+  }
+
+  persist(responses) {
+    try { localStorage.setItem(this.STORE, JSON.stringify(responses)); } catch (e) {}
+  }
+
+  setField(key, val) {
+    this.setState(s => ({ form: { ...s.form, [key]: val }, err: { ...s.err, [key]: '' } }));
+  }
+
+  submit = () => {
+    const f = this.state.form;
+    const err = {};
+    if (!f.name.trim()) err.name = 'Please enter your name';
+    if (!f.attending) err.attending = 'Please let us know if you can make it';
+    if (f.attending === 'yes' && !f.food.trim()) err.food = 'Please tell us what you’d like to eat';
+    if (Object.keys(err).length) { this.setState({ err }); return; }
+
+    const id = this.state.myId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    const record = {
+      id,
+      name: f.name.trim(),
+      attending: f.attending,
+      party: f.attending === 'yes' ? f.party : '',
+      food: f.attending === 'yes' ? f.food.trim() : '',
+      orderName: f.attending === 'yes' ? f.orderName.trim() : '',
+      dietary: f.dietary.trim(),
+      message: f.message.trim(),
+      ts: Date.now(),
+    };
+    const responses = this.state.responses.slice();
+    const idx = responses.findIndex(r => r.id === id);
+    if (idx >= 0) responses[idx] = record; else responses.push(record);
+    this.persist(responses);
+    try { localStorage.setItem(this.MINE, id); } catch (e) {}
+    this.setState({ responses, myId: id, screen: 'confirm', err: {} });
+    window.scrollTo(0, 0);
+  };
+
+  editMine = () => {
+    const mine = this.state.responses.find(r => r.id === this.state.myId);
+    if (mine) {
+      this.setState({
+        form: {
+          name: mine.name, attending: mine.attending, party: mine.party || '1',
+          food: mine.food || '', orderName: mine.orderName || '', dietary: mine.dietary, message: mine.message,
+        },
+        screen: 'form', err: {},
+      });
+    } else {
+      this.setState({ screen: 'form' });
+    }
+    window.scrollTo(0, 0);
+  };
+
+  openHost = () => { this.setState({ view: 'host', passInput: '', passError: '' }); window.scrollTo(0, 0); };
+  exitHost = () => { this.setState({ view: 'guest' }); window.scrollTo(0, 0); };
+  submitPass = () => {
+    if (this.state.passInput.trim() === this.PASS) this.setState({ hostAuthed: true, passError: '' });
+    else this.setState({ passError: 'Incorrect passcode. Please try again.' });
+  };
+
+  csvText() {
+    const headers = ['Name', 'Order name', 'Attending', 'Party', 'Pre-order', 'Dietary / Allergies', 'Message', 'Submitted'];
+    const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [headers.map(esc).join(',')];
+    this.state.responses.forEach(r => {
+      lines.push([
+        r.name, r.orderName, r.attending === 'yes' ? 'Yes' : 'No', r.attending === 'yes' ? r.party : '',
+        r.food, r.dietary, r.message,
+        new Date(r.ts).toLocaleString('en-GB'),
+      ].map(esc).join(','));
+    });
+    return lines.join('\r\n');
+  }
+
+  downloadCSV = () => {
+    try {
+      const blob = new Blob([this.csvText()], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'tomi-graduation-rsvps.csv';
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+    } catch (e) {}
+  };
+
+  copyAll = () => {
+    const text = this.state.responses.map((r, i) => {
+      const lines = [`${i + 1}. ${r.name} — ${r.attending === 'yes' ? 'Attending' : 'Not attending'}`];
+      if (r.orderName) lines.push(`   Order name: ${r.orderName}`);
+      if (r.attending === 'yes') {
+        lines.push(`   Party: ${r.party}`);
+        lines.push(`   Pre-order: ${r.food}`);
+      }
+      if (r.dietary) lines.push(`   Dietary: ${r.dietary}`);
+      if (r.message) lines.push(`   Message: ${r.message}`);
+      return lines.join('\n');
+    }).join('\n\n');
+    const done = () => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => this.fallbackCopy(text, done));
+    } else { this.fallbackCopy(text, done); }
+  };
+
+  fallbackCopy(text, done) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta); done();
+    } catch (e) {}
+  }
+
+  renderVals() {
+    const s = this.state;
+    const f = s.form;
+    const attendingYes = f.attending === 'yes';
+
+    const pillBase = 'text-align:center; font-family:\'Cormorant Garamond\',serif; font-size:19px; padding:14px 8px; border-radius:2px; cursor:pointer; transition:all .18s; user-select:none;';
+    const sel = 'background:#B8924A; color:#FFFFFF; border:1px solid #B8924A;';
+    const unsel = 'background:#FCFAF4; color:#544D40; border:1px solid #E4DAC4;';
+    const yesStyle = pillBase + (f.attending === 'yes' ? sel : unsel);
+    const noStyle = pillBase + (f.attending === 'no' ? sel : unsel);
+
+    const mine = s.responses.find(r => r.id === s.myId);
+    let confirmKicker = 'Thank you', confirmTitle = '', confirmMessage = '', summaryRows = [];
+    if (mine) {
+      if (mine.attending === 'yes') {
+        confirmKicker = 'You’re coming!';
+        confirmTitle = 'Yay — see you there!';
+        confirmMessage = 'Your spot is saved. I can’t wait to celebrate with you. Thank you so much for coming. — Tomi';
+        summaryRows = [{ label: 'Name', value: mine.name }];
+        if (mine.orderName) summaryRows.push({ label: 'Order name', value: mine.orderName });
+        summaryRows.push({ label: 'Party', value: String(mine.party) });
+        summaryRows.push({ label: 'Pre-order', value: mine.food });
+        if (mine.dietary) summaryRows.push({ label: 'Dietary', value: mine.dietary });
+      } else {
+        confirmKicker = 'Response received';
+        confirmTitle = 'You’ll be missed';
+        confirmMessage = 'Thank you for letting me know — you’ll be missed! I’ll raise a glass to you in spirit. — Tomi';
+        summaryRows = [{ label: 'Name', value: mine.name }, { label: 'Attending', value: 'Regretfully declines' }];
+        if (mine.message) summaryRows.push({ label: 'Message', value: mine.message });
+      }
+    }
+
+    const yesList = s.responses.filter(r => r.attending === 'yes');
+    const attendees = yesList.reduce((a, r) => a + (parseInt(r.party) || 1), 0);
+    const stats = {
+      replies: s.responses.length,
+      yes: yesList.length,
+      no: s.responses.filter(r => r.attending === 'no').length,
+      attendees,
+    };
+
+    const badgeYes = 'display:inline-block; font-size:12px; padding:3px 10px; border-radius:20px; background:#EAF1E6; color:#4A7A3F; letter-spacing:.04em;';
+    const badgeNo = 'display:inline-block; font-size:12px; padding:3px 10px; border-radius:20px; background:#F3E7E2; color:#A35A45; letter-spacing:.04em;';
+    const rows = s.responses.slice().sort((a, b) => b.ts - a.ts).map(r => ({
+      name: r.name,
+      going: r.attending === 'yes' ? 'Yes' : 'No',
+      badgeStyle: r.attending === 'yes' ? badgeYes : badgeNo,
+      orderName: r.orderName || '—',
+      party: r.attending === 'yes' ? String(r.party) : '—',
+      food: r.food || '—',
+      dietary: r.dietary || '—',
+      message: r.message || '—',
+    }));
+
+    return {
+      showForm: s.view === 'guest' && s.screen === 'form',
+      showConfirm: s.view === 'guest' && s.screen === 'confirm',
+      showHostGate: s.view === 'host' && !s.hostAuthed,
+      showHostDash: s.view === 'host' && s.hostAuthed,
+
+      form: f,
+      err: s.err,
+      attendingYes,
+      yesStyle, noStyle,
+      submitLabel: s.myId ? 'Update my response' : 'Send my RSVP',
+      onName: e => this.setField('name', e.target.value),
+      onParty: e => this.setField('party', e.target.value),
+      onFood: e => this.setField('food', e.target.value),
+      onOrderName: e => this.setField('orderName', e.target.value),
+      onDietary: e => this.setField('dietary', e.target.value),
+      onMessage: e => this.setField('message', e.target.value),
+      chooseYes: () => this.setState(st => ({ form: { ...st.form, attending: 'yes' }, err: { ...st.err, attending: '' } })),
+      chooseNo: () => this.setState(st => ({ form: { ...st.form, attending: 'no' }, err: { ...st.err, attending: '' } })),
+      submit: this.submit,
+
+      confirmKicker, confirmTitle, confirmMessage, summaryRows,
+      editMine: this.editMine,
+
+      passInput: s.passInput,
+      passError: s.passError,
+      onPass: e => this.setState({ passInput: e.target.value, passError: '' }),
+      onPassKey: e => { if (e.key === 'Enter') this.submitPass(); },
+      submitPass: this.submitPass,
+      openHost: this.openHost,
+      exitHost: this.exitHost,
+      stats, rows,
+      hasResponses: s.responses.length > 0,
+      noResponses: s.responses.length === 0,
+      copyLabel: s.copied ? 'Copied ✓' : 'Copy all responses',
+      downloadCSV: this.downloadCSV,
+      copyAll: this.copyAll,
+    };
+  }
+}
+</script>
+</body>
+</html>
