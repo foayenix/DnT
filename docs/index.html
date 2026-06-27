@@ -218,6 +218,8 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
     <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px;">
       <button onClick="{{ downloadCSV }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:11px 22px; cursor:pointer;">Download CSV</button>
       <button onClick="{{ copyAll }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:11px 22px; cursor:pointer;">{{ copyLabel }}</button>
+      <button onClick="{{ copyOrders }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:11px 22px; cursor:pointer;">{{ copyOrdersLabel }}</button>
+      <button onClick="{{ downloadOrders }}" style="font-family:'EB Garamond',serif; font-size:15px; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:11px 22px; cursor:pointer;">Download order summary</button>
     </div>
 
     <sc-if value="{{ hasResponses }}" hint-placeholder-val="">
@@ -277,6 +279,7 @@ class Component extends DCLogic {
     passInput: '',
     passError: '',
     copied: false,
+    ordersCopied: false,
     form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' },
     err: {},
     responses: [],
@@ -402,6 +405,41 @@ class Component extends DCLogic {
     } catch (e) {}
   }
 
+  ordersText() {
+    const attendees = this.state.responses
+      .filter(r => r.attending === 'yes')
+      .slice()
+      .sort((a, b) => a.ts - b.ts);
+    return attendees.map((r, i) => {
+      const lines = [`Order #${i + 1}`];
+      lines.push(`Name: ${r.name}`);
+      if (r.orderName) lines.push(`Order name: ${r.orderName}`);
+      lines.push(`Party size: ${r.party}`);
+      lines.push(`Pre-order: ${r.food || '—'}`);
+      lines.push(`Dietary: ${r.dietary || '—'}`);
+      return lines.join('\n');
+    }).join('\n\n');
+  }
+
+  copyOrders = () => {
+    const text = this.ordersText();
+    const done = () => { this.setState({ ordersCopied: true }); setTimeout(() => this.setState({ ordersCopied: false }), 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => this.fallbackCopy(text, done));
+    } else { this.fallbackCopy(text, done); }
+  };
+
+  downloadOrders = () => {
+    try {
+      const blob = new Blob([this.ordersText()], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'order-summary.txt';
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+    } catch (e) {}
+  };
+
   renderVals() {
     const s = this.state;
     const f = s.form;
@@ -491,8 +529,11 @@ class Component extends DCLogic {
       hasResponses: s.responses.length > 0,
       noResponses: s.responses.length === 0,
       copyLabel: s.copied ? 'Copied ✓' : 'Copy all responses',
+      copyOrdersLabel: s.ordersCopied ? 'Copied ✓' : 'Copy order summary',
       downloadCSV: this.downloadCSV,
       copyAll: this.copyAll,
+      copyOrders: this.copyOrders,
+      downloadOrders: this.downloadOrders,
     };
   }
 }
