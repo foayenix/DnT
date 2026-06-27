@@ -143,6 +143,7 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
           <textarea onChange="{{ onMessage }}" value="{{ form.message }}" rows="3" placeholder="Say hi or leave a little note…" style="display:block; width:100%; font-family:'EB Garamond',serif; font-size:17px; color:#2C2823; background:#FCFAF4; border:1px solid #E4DAC4; border-radius:2px; padding:13px 14px; outline:none; resize:vertical;" style-focus="border-color:#B8924A; background:#FFFFFF;"></textarea>
         </label>
 
+        <sc-if value="{{ err.submit }}" hint-placeholder-val=""><span style="display:block; color:#B0563C; font-style:italic; font-size:14px; margin-bottom:10px;">{{ err.submit }}</span></sc-if>
         <button onClick="{{ submit }}" style="width:100%; font-family:'Cormorant Garamond',serif; font-size:21px; letter-spacing:.06em; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:15px; cursor:pointer; transition:background .2s;" style-hover="background:#9F7C39;">{{ submitLabel }}</button>
       </div>
     </section>
@@ -195,6 +196,8 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
       <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:40px; margin:0; color:#2C2823;">Responses</h2>
       <button onClick="{{ exitHost }}" style="background:transparent; border:none; color:#9A8C70; font-family:'EB Garamond',serif; font-size:15px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">Back to invitation</button>
     </div>
+
+    <sc-if value="{{ loadError }}" hint-placeholder-val=""><p style="color:#B0563C; font-style:italic; margin:0 0 16px;">{{ loadError }}</p></sc-if>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:22px 0 26px;">
       <div style="background:#FFFFFF; border:1px solid rgba(184,146,74,.3); border-radius:3px; padding:20px;">
@@ -268,9 +271,10 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  STORE = 'tomi_grad_rsvp_v2';
   MINE = 'tomi_grad_rsvp_mine_v2';
   PASS = '062026';
+  SUPABASE_URL = 'https://waxxeomxwlcjgiqtsxzd.supabase.co';
+  SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndheHhlb214d2xjamdpcXRzeHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MTA5OTgsImV4cCI6MjA5ODA4Njk5OH0.mEUlW7Ahs2jmLGAJdaMzY-AO6S3rMOq2YH6Xh_o4_1Q';
 
   state = {
     view: 'guest',
@@ -284,17 +288,46 @@ class Component extends DCLogic {
     err: {},
     responses: [],
     myId: null,
+    loadError: '',
   };
 
-  componentDidMount() {
-    let responses = [];
-    try { responses = JSON.parse(localStorage.getItem(this.STORE) || '[]'); } catch (e) { responses = []; }
-    const myId = localStorage.getItem(this.MINE) || null;
-    this.setState({ responses, myId });
+  sbHeaders(extra) {
+    return Object.assign({
+      apikey: this.SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + this.SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+    }, extra || {});
   }
 
-  persist(responses) {
-    try { localStorage.setItem(this.STORE, JSON.stringify(responses)); } catch (e) {}
+  fromRow(row) {
+    return {
+      id: row.id,
+      name: row.name,
+      attending: row.attending,
+      party: row.party,
+      food: row.food,
+      orderName: row.order_name,
+      dietary: row.dietary,
+      message: row.message,
+      ts: new Date(row.created_at).getTime(),
+    };
+  }
+
+  async fetchResponses() {
+    const res = await fetch(this.SUPABASE_URL + '/rest/v1/rsvps?select=*&order=created_at.asc', {
+      headers: this.sbHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to load responses');
+    const rows = await res.json();
+    return rows.map(r => this.fromRow(r));
+  }
+
+  componentDidMount() {
+    const myId = localStorage.getItem(this.MINE) || null;
+    this.setState({ myId });
+    this.fetchResponses()
+      .then(responses => this.setState({ responses, loadError: '' }))
+      .catch(() => this.setState({ loadError: 'Could not load responses right now.' }));
   }
 
   setField(key, val) {
@@ -310,24 +343,29 @@ class Component extends DCLogic {
     if (Object.keys(err).length) { this.setState({ err }); return; }
 
     const id = this.state.myId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
-    const record = {
+    const row = {
       id,
       name: f.name.trim(),
       attending: f.attending,
       party: f.attending === 'yes' ? f.party : '',
       food: f.attending === 'yes' ? f.food.trim() : '',
-      orderName: f.attending === 'yes' ? f.orderName.trim() : '',
+      order_name: f.attending === 'yes' ? f.orderName.trim() : '',
       dietary: f.dietary.trim(),
       message: f.message.trim(),
-      ts: Date.now(),
     };
-    const responses = this.state.responses.slice();
-    const idx = responses.findIndex(r => r.id === id);
-    if (idx >= 0) responses[idx] = record; else responses.push(record);
-    this.persist(responses);
-    try { localStorage.setItem(this.MINE, id); } catch (e) {}
-    this.setState({ responses, myId: id, screen: 'confirm', err: {} });
-    window.scrollTo(0, 0);
+
+    fetch(this.SUPABASE_URL + '/rest/v1/rsvps', {
+      method: 'POST',
+      headers: this.sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+      body: JSON.stringify(row),
+    })
+      .then(res => { if (!res.ok) throw new Error('Submit failed'); return this.fetchResponses(); })
+      .then(responses => {
+        try { localStorage.setItem(this.MINE, id); } catch (e) {}
+        this.setState({ responses, myId: id, screen: 'confirm', err: {} });
+        window.scrollTo(0, 0);
+      })
+      .catch(() => this.setState({ err: { submit: 'Something went wrong — please try again.' } }));
   };
 
   editMine = () => {
@@ -346,7 +384,13 @@ class Component extends DCLogic {
     window.scrollTo(0, 0);
   };
 
-  openHost = () => { this.setState({ view: 'host', passInput: '', passError: '' }); window.scrollTo(0, 0); };
+  openHost = () => {
+    this.setState({ view: 'host', passInput: '', passError: '' });
+    window.scrollTo(0, 0);
+    this.fetchResponses()
+      .then(responses => this.setState({ responses, loadError: '' }))
+      .catch(() => this.setState({ loadError: 'Could not load responses right now.' }));
+  };
   exitHost = () => { this.setState({ view: 'guest' }); window.scrollTo(0, 0); };
   submitPass = () => {
     if (this.state.passInput.trim() === this.PASS) this.setState({ hostAuthed: true, passError: '' });
@@ -526,6 +570,7 @@ class Component extends DCLogic {
       openHost: this.openHost,
       exitHost: this.exitHost,
       stats, rows,
+      loadError: s.loadError,
       hasResponses: s.responses.length > 0,
       noResponses: s.responses.length === 0,
       copyLabel: s.copied ? 'Copied ✓' : 'Copy all responses',
