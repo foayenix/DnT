@@ -359,13 +359,23 @@ class Component extends DCLogic {
       headers: this.sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
       body: JSON.stringify(row),
     })
-      .then(res => { if (!res.ok) throw new Error('Submit failed'); return this.fetchResponses(); })
+      .then(async res => {
+        if (!res.ok) {
+          let detail = '';
+          try { detail = await res.text(); } catch (e) {}
+          throw new Error('Submit failed (' + res.status + '): ' + detail);
+        }
+        return this.fetchResponses();
+      })
       .then(responses => {
         try { localStorage.setItem(this.MINE, id); } catch (e) {}
         this.setState({ responses, myId: id, screen: 'confirm', err: {} });
         window.scrollTo(0, 0);
       })
-      .catch(() => this.setState({ err: { submit: 'Something went wrong — please try again.' } }));
+      .catch(e => {
+        console.error(e);
+        this.setState({ err: { submit: 'Something went wrong — please try again. (' + e.message + ')' } });
+      });
   };
 
   editMine = () => {
