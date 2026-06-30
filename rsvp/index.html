@@ -173,7 +173,7 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
       </sc-for>
     </div>
 
-    <button onClick="{{ editMine }}" style="margin-top:30px; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.04em; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:12px 30px; cursor:pointer; transition:all .2s;" style-hover="background:#B8924A; color:#FFFFFF;">Edit my response</button>
+    <button onClick="{{ submitAnother }}" style="margin-top:30px; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.04em; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:12px 30px; cursor:pointer; transition:all .2s;" style-hover="background:#B8924A; color:#FFFFFF;">Submit another response</button>
   </section>
   </sc-if>
 
@@ -271,7 +271,6 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  MINE = 'tomi_grad_rsvp_mine_v2';
   PASS = '062026';
   SUPABASE_URL = 'https://waxxeomxwlcjgiqtsxzd.supabase.co';
   SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndheHhlb214d2xjamdpcXRzeHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MTA5OTgsImV4cCI6MjA5ODA4Njk5OH0.mEUlW7Ahs2jmLGAJdaMzY-AO6S3rMOq2YH6Xh_o4_1Q';
@@ -287,7 +286,7 @@ class Component extends DCLogic {
     form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' },
     err: {},
     responses: [],
-    myId: null,
+    lastSubmitted: null,
     loadError: '',
   };
 
@@ -323,8 +322,6 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
-    const myId = localStorage.getItem(this.MINE) || null;
-    this.setState({ myId });
     this.fetchResponses()
       .then(responses => this.setState({ responses, loadError: '' }))
       .catch(() => this.setState({ loadError: 'Could not load responses right now.' }));
@@ -342,7 +339,7 @@ class Component extends DCLogic {
     if (f.attending === 'yes' && !f.food.trim()) err.food = 'Please tell us what you’d like to eat';
     if (Object.keys(err).length) { this.setState({ err }); return; }
 
-    const id = this.state.myId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const row = {
       id,
       name: f.name.trim(),
@@ -356,7 +353,7 @@ class Component extends DCLogic {
 
     fetch(this.SUPABASE_URL + '/rest/v1/rsvps', {
       method: 'POST',
-      headers: this.sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+      headers: this.sbHeaders({ Prefer: 'return=representation' }),
       body: JSON.stringify(row),
     })
       .then(async res => {
@@ -368,29 +365,18 @@ class Component extends DCLogic {
         return this.fetchResponses();
       })
       .then(responses => {
-        try { localStorage.setItem(this.MINE, id); } catch (e) {}
-        this.setState({ responses, myId: id, screen: 'confirm', err: {} });
+        const lastSubmitted = { ...row, orderName: row.order_name };
+        this.setState({ responses, lastSubmitted, screen: 'confirm', err: {} });
         window.scrollTo(0, 0);
       })
       .catch(e => {
         console.error(e);
-        this.setState({ err: { submit: 'Something went wrong — please try again. (' + e.message + ')' } });
+        this.setState({ err: { submit: 'Something went wrong — please try again.' } });
       });
   };
 
-  editMine = () => {
-    const mine = this.state.responses.find(r => r.id === this.state.myId);
-    if (mine) {
-      this.setState({
-        form: {
-          name: mine.name, attending: mine.attending, party: mine.party || '1',
-          food: mine.food || '', orderName: mine.orderName || '', dietary: mine.dietary, message: mine.message,
-        },
-        screen: 'form', err: {},
-      });
-    } else {
-      this.setState({ screen: 'form' });
-    }
+  submitAnother = () => {
+    this.setState({ screen: 'form', lastSubmitted: null, form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' }, err: {} });
     window.scrollTo(0, 0);
   };
 
@@ -505,24 +491,24 @@ class Component extends DCLogic {
     const yesStyle = pillBase + (f.attending === 'yes' ? sel : unsel);
     const noStyle = pillBase + (f.attending === 'no' ? sel : unsel);
 
-    const mine = s.responses.find(r => r.id === s.myId);
-    let confirmKicker = 'Thank you', confirmTitle = '', confirmMessage = '', summaryRows = [];
-    if (mine) {
-      if (mine.attending === 'yes') {
-        confirmKicker = 'You’re coming!';
-        confirmTitle = 'Yay — see you there!';
-        confirmMessage = 'Your spot is saved. I can’t wait to celebrate with you. Thank you so much for coming. — Abigael';
-        summaryRows = [{ label: 'Name', value: mine.name }];
-        if (mine.orderName) summaryRows.push({ label: 'Order name', value: mine.orderName });
-        summaryRows.push({ label: 'Party', value: String(mine.party) });
-        summaryRows.push({ label: 'Pre-order', value: mine.food });
-        if (mine.dietary) summaryRows.push({ label: 'Dietary', value: mine.dietary });
+    const last = s.lastSubmitted;
+    let confirmKicker = "", confirmTitle = "", confirmMessage = "", summaryRows = [];
+    if (last) {
+      if (last.attending === ‘yes’) {
+        confirmKicker = ‘You’re coming!’;
+        confirmTitle = ‘Yay — see you there!’;
+        confirmMessage = ‘Your spot is saved. I can’t wait to celebrate with you. Thank you so much for coming. — Abigael’;
+        summaryRows = [{ label: ‘Name’, value: last.name }];
+        if (last.orderName) summaryRows.push({ label: ‘Order name’, value: last.orderName });
+        summaryRows.push({ label: ‘Party’, value: String(last.party) });
+        summaryRows.push({ label: ‘Pre-order’, value: last.food });
+        if (last.dietary) summaryRows.push({ label: ‘Dietary’, value: last.dietary });
       } else {
-        confirmKicker = 'Response received';
-        confirmTitle = 'You’ll be missed';
-        confirmMessage = 'Thank you for letting me know — you’ll be missed! I’ll raise a glass to you in spirit. — Abigael';
-        summaryRows = [{ label: 'Name', value: mine.name }, { label: 'Attending', value: 'Regretfully declines' }];
-        if (mine.message) summaryRows.push({ label: 'Message', value: mine.message });
+        confirmKicker = ‘Response received’;
+        confirmTitle = ‘You’ll be missed’;
+        confirmMessage = ‘Thank you for letting me know — you’ll be missed! I’ll raise a glass to you in spirit. — Abigael’;
+        summaryRows = [{ label: ‘Name’, value: last.name }, { label: ‘Attending’, value: ‘Regretfully declines’ }];
+        if (last.message) summaryRows.push({ label: ‘Message’, value: last.message });
       }
     }
 
@@ -558,7 +544,7 @@ class Component extends DCLogic {
       err: s.err,
       attendingYes,
       yesStyle, noStyle,
-      submitLabel: s.myId ? 'Update my response' : 'Send my RSVP',
+      submitLabel: 'Send my RSVP',
       onName: e => this.setField('name', e.target.value),
       onParty: e => this.setField('party', e.target.value),
       onFood: e => this.setField('food', e.target.value),
@@ -570,7 +556,7 @@ class Component extends DCLogic {
       submit: this.submit,
 
       confirmKicker, confirmTitle, confirmMessage, summaryRows,
-      editMine: this.editMine,
+      submitAnother: this.submitAnother,
 
       passInput: s.passInput,
       passError: s.passError,
