@@ -492,23 +492,23 @@ class Component extends DCLogic {
     const noStyle = pillBase + (f.attending === 'no' ? sel : unsel);
 
     const last = s.lastSubmitted;
-    let confirmKicker = "", confirmTitle = "", confirmMessage = "", summaryRows = [];
+    let confirmKicker = 'Thank you', confirmTitle = '', confirmMessage = '', summaryRows = [];
     if (last) {
-      if (last.attending === ‘yes’) {
-        confirmKicker = ‘You’re coming!’;
-        confirmTitle = ‘Yay — see you there!’;
-        confirmMessage = ‘Your spot is saved. I can’t wait to celebrate with you. Thank you so much for coming. — Abigael’;
-        summaryRows = [{ label: ‘Name’, value: last.name }];
-        if (last.orderName) summaryRows.push({ label: ‘Order name’, value: last.orderName });
-        summaryRows.push({ label: ‘Party’, value: String(last.party) });
-        summaryRows.push({ label: ‘Pre-order’, value: last.food });
-        if (last.dietary) summaryRows.push({ label: ‘Dietary’, value: last.dietary });
+      if (last.attending === 'yes') {
+        confirmKicker = 'You’re coming!';
+        confirmTitle = 'Yay — see you there!';
+        confirmMessage = 'Your spot is saved. I can’t wait to celebrate with you. Thank you so much for coming. — Abigael';
+        summaryRows = [{ label: 'Name', value: last.name }];
+        if (last.orderName) summaryRows.push({ label: 'Order name', value: last.orderName });
+        summaryRows.push({ label: 'Party', value: String(last.party) });
+        summaryRows.push({ label: 'Pre-order', value: last.food });
+        if (last.dietary) summaryRows.push({ label: 'Dietary', value: last.dietary });
       } else {
-        confirmKicker = ‘Response received’;
-        confirmTitle = ‘You’ll be missed’;
-        confirmMessage = ‘Thank you for letting me know — you’ll be missed! I’ll raise a glass to you in spirit. — Abigael’;
-        summaryRows = [{ label: ‘Name’, value: last.name }, { label: ‘Attending’, value: ‘Regretfully declines’ }];
-        if (last.message) summaryRows.push({ label: ‘Message’, value: last.message });
+        confirmKicker = 'Response received';
+        confirmTitle = 'You’ll be missed';
+        confirmMessage = 'Thank you for letting me know — you’ll be missed! I’ll raise a glass to you in spirit. — Abigael';
+        summaryRows = [{ label: 'Name', value: last.name }, { label: 'Attending', value: 'Regretfully declines' }];
+        if (last.message) summaryRows.push({ label: 'Message', value: last.message });
       }
     }
 
