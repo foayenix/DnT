@@ -146,6 +146,10 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
         <sc-if value="{{ err.submit }}" hint-placeholder-val=""><span style="display:block; color:#B0563C; font-style:italic; font-size:14px; margin-bottom:10px;">{{ err.submit }}</span></sc-if>
         <button onClick="{{ submit }}" style="width:100%; font-family:'Cormorant Garamond',serif; font-size:21px; letter-spacing:.06em; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:15px; cursor:pointer; transition:background .2s;" style-hover="background:#9F7C39;">{{ submitLabel }}</button>
       </div>
+
+      <p style="text-align:center; margin-top:18px;">
+        <button onClick="{{ openLookup }}" style="background:transparent; border:none; color:#9A8C70; font-family:'EB Garamond',serif; font-size:14px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">Already responded? Edit your response</button>
+      </p>
     </section>
 
   </div>
@@ -173,7 +177,25 @@ Dessert — Sticky Toffee Pudding" style="width:100%; font-family:'EB Garamond',
       </sc-for>
     </div>
 
+    <div style="margin:24px auto 0; max-width:420px; background:#FCFAF4; border:1px dashed rgba(184,146,74,.5); border-radius:3px; padding:18px 22px;">
+      <p style="margin:0; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#9A8C70; font-weight:600;">Your confirmation code</p>
+      <p style="margin:6px 0 0; font-family:'Cormorant Garamond',serif; font-size:26px; letter-spacing:.08em; color:#B8924A;">{{ confirmCode }}</p>
+      <p style="margin:8px 0 0; color:#9A8C70; font-style:italic; font-size:13px;">Save this if you'd like to edit your response later.</p>
+    </div>
+
     <button onClick="{{ submitAnother }}" style="margin-top:30px; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.04em; color:#2C2823; background:transparent; border:1px solid #B8924A; border-radius:2px; padding:12px 30px; cursor:pointer; transition:all .2s;" style-hover="background:#B8924A; color:#FFFFFF;">Submit another response</button>
+  </section>
+  </sc-if>
+
+  <!-- ===================== GUEST: LOOKUP ===================== -->
+  <sc-if value="{{ showLookup }}" hint-placeholder-val="">
+  <section style="max-width:420px; margin:0 auto; padding:100px 28px; text-align:center;">
+    <h2 style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:36px; margin:0 0 8px; color:#2C2823;">Edit your response</h2>
+    <p style="color:#6E6657; font-style:italic; margin:0 0 26px;">Enter the confirmation code you received when you submitted.</p>
+    <input type="text" value="{{ lookupInput }}" onChange="{{ onLookupInput }}" onKeyDown="{{ onLookupKey }}" placeholder="Confirmation code" style="width:100%; text-align:center; letter-spacing:.2em; font-family:'EB Garamond',serif; font-size:18px; background:#FFFFFF; border:1px solid #E4DAC4; border-radius:2px; padding:14px; outline:none;" style-focus="border-color:#B8924A;">
+    <sc-if value="{{ lookupError }}" hint-placeholder-val=""><p style="color:#B0563C; font-style:italic; font-size:14px; margin:10px 0 0;">{{ lookupError }}</p></sc-if>
+    <button onClick="{{ submitLookup }}" style="margin-top:18px; width:100%; font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.05em; color:#FFFFFF; background:#B8924A; border:none; border-radius:2px; padding:13px; cursor:pointer;">Find my response</button>
+    <button onClick="{{ exitLookup }}" style="margin-top:14px; background:transparent; border:none; color:#9A8C70; font-family:'EB Garamond',serif; font-size:15px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">Back to invitation</button>
   </section>
   </sc-if>
 
@@ -288,6 +310,9 @@ class Component extends DCLogic {
     responses: [],
     lastSubmitted: null,
     loadError: '',
+    editId: null,
+    lookupInput: '',
+    lookupError: '',
   };
 
   sbHeaders(extra) {
@@ -339,9 +364,9 @@ class Component extends DCLogic {
     if (f.attending === 'yes' && !f.food.trim()) err.food = 'Please tell us what you’d like to eat';
     if (Object.keys(err).length) { this.setState({ err }); return; }
 
-    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const editId = this.state.editId;
+    const id = editId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
     const row = {
-      id,
       name: f.name.trim(),
       attending: f.attending,
       party: f.attending === 'yes' ? f.party : '',
@@ -351,10 +376,16 @@ class Component extends DCLogic {
       message: f.message.trim(),
     };
 
-    fetch(this.SUPABASE_URL + '/rest/v1/rsvps', {
-      method: 'POST',
+    const url = editId
+      ? this.SUPABASE_URL + '/rest/v1/rsvps?id=eq.' + encodeURIComponent(editId)
+      : this.SUPABASE_URL + '/rest/v1/rsvps';
+    const method = editId ? 'PATCH' : 'POST';
+    const body = editId ? row : { ...row, id };
+
+    fetch(url, {
+      method,
       headers: this.sbHeaders({ Prefer: 'return=representation' }),
-      body: JSON.stringify(row),
+      body: JSON.stringify(body),
     })
       .then(async res => {
         if (!res.ok) {
@@ -365,8 +396,8 @@ class Component extends DCLogic {
         return this.fetchResponses();
       })
       .then(responses => {
-        const lastSubmitted = { ...row, orderName: row.order_name };
-        this.setState({ responses, lastSubmitted, screen: 'confirm', err: {} });
+        const lastSubmitted = { ...row, id, orderName: row.order_name };
+        this.setState({ responses, lastSubmitted, screen: 'confirm', err: {}, editId: null });
         window.scrollTo(0, 0);
       })
       .catch(e => {
@@ -375,8 +406,41 @@ class Component extends DCLogic {
       });
   };
 
+  openLookup = () => {
+    this.setState({ screen: 'lookup', lookupInput: '', lookupError: '' });
+    window.scrollTo(0, 0);
+  };
+
+  exitLookup = () => {
+    this.setState({ screen: 'form', lookupError: '' });
+    window.scrollTo(0, 0);
+  };
+
+  submitLookup = () => {
+    const code = this.state.lookupInput.trim();
+    if (!code) { this.setState({ lookupError: 'Please enter your confirmation code' }); return; }
+    fetch(this.SUPABASE_URL + '/rest/v1/rsvps?id=eq.' + encodeURIComponent(code), {
+      headers: this.sbHeaders(),
+    })
+      .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+      .then(rows => {
+        if (!rows.length) { this.setState({ lookupError: 'No response found for that code.' }); return; }
+        const r = this.fromRow(rows[0]);
+        this.setState({
+          editId: r.id,
+          form: {
+            name: r.name, attending: r.attending, party: r.party || '1',
+            food: r.food || '', orderName: r.orderName || '', dietary: r.dietary || '', message: r.message || '',
+          },
+          screen: 'form', err: {}, lookupError: '',
+        });
+        window.scrollTo(0, 0);
+      })
+      .catch(() => this.setState({ lookupError: 'Something went wrong — please try again.' }));
+  };
+
   submitAnother = () => {
-    this.setState({ screen: 'form', lastSubmitted: null, form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' }, err: {} });
+    this.setState({ screen: 'form', lastSubmitted: null, editId: null, form: { name: '', attending: '', party: '1', food: '', orderName: '', dietary: '', message: '' }, err: {} });
     window.scrollTo(0, 0);
   };
 
@@ -537,6 +601,7 @@ class Component extends DCLogic {
     return {
       showForm: s.view === 'guest' && s.screen === 'form',
       showConfirm: s.view === 'guest' && s.screen === 'confirm',
+      showLookup: s.view === 'guest' && s.screen === 'lookup',
       showHostGate: s.view === 'host' && !s.hostAuthed,
       showHostDash: s.view === 'host' && s.hostAuthed,
 
@@ -544,7 +609,7 @@ class Component extends DCLogic {
       err: s.err,
       attendingYes,
       yesStyle, noStyle,
-      submitLabel: 'Send my RSVP',
+      submitLabel: s.editId ? 'Update my response' : 'Send my RSVP',
       onName: e => this.setField('name', e.target.value),
       onParty: e => this.setField('party', e.target.value),
       onFood: e => this.setField('food', e.target.value),
@@ -556,7 +621,16 @@ class Component extends DCLogic {
       submit: this.submit,
 
       confirmKicker, confirmTitle, confirmMessage, summaryRows,
+      confirmCode: s.lastSubmitted ? s.lastSubmitted.id : '',
       submitAnother: this.submitAnother,
+
+      openLookup: this.openLookup,
+      exitLookup: this.exitLookup,
+      submitLookup: this.submitLookup,
+      lookupInput: s.lookupInput,
+      lookupError: s.lookupError,
+      onLookupInput: e => this.setState({ lookupInput: e.target.value, lookupError: '' }),
+      onLookupKey: e => { if (e.key === 'Enter') this.submitLookup(); },
 
       passInput: s.passInput,
       passError: s.passError,
